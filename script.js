@@ -11,8 +11,6 @@ const firebaseConfig = {
     measurementId: "G-K09B5RZ620"
 };
 
-
-
 // Initialize Firebase
 firebase.initializeApp(firebaseConfig);
 const db = firebase.firestore();
@@ -93,6 +91,7 @@ async function fetchAndRenderListings(projectId, projectName) {
         const tr = document.createElement('tr');
         tr.dataset.id = doc.id;
 
+        // MODIFIED: Added remarks column
         tr.innerHTML = `
             <td data-label="No.">${counter}</td>
             <td data-label="Title"><a href="${listing.url}" target="_blank">${listing.title}</a></td>
@@ -110,6 +109,7 @@ async function fetchAndRenderListings(projectId, projectName) {
                     <option value="close" ${listing.status === 'close' ? 'selected' : ''}>Close</option>
                 </select>
             </td>
+            <td data-label="Remarks" contenteditable="true">${listing.remarks || ''}</td>
         `;
 
         // Add event listeners for updates
@@ -118,6 +118,12 @@ async function fetchAndRenderListings(projectId, projectName) {
 
         const select = tr.querySelector('select');
         select.addEventListener('change', (e) => updateListing(projectId, doc.id, { status: e.target.value }));
+        
+        // ADDED: Event listener for the editable remarks cell
+        const remarksCell = tr.querySelector('td[contenteditable="true"]');
+        remarksCell.addEventListener('blur', (e) => { // 'blur' fires when the element loses focus
+            updateListing(projectId, doc.id, { remarks: e.target.innerText });
+        });
 
         listingsTbody.appendChild(tr);
         counter--;
@@ -161,6 +167,7 @@ async function createListing(projectId, listingData) {
 async function updateListing(projectId, listingId, dataToUpdate) {
     try {
         await db.collection('projects').doc(projectId).collection('listings').doc(listingId).update(dataToUpdate);
+        // Optional: add a visual cue for successful save
     } catch (error) {
         console.error("Error updating listing: ", error);
     }
@@ -183,12 +190,14 @@ addListingBtn.addEventListener('click', () => toggleModal('listing-modal', true)
 
 addListingForm.addEventListener('submit', (e) => {
     e.preventDefault();
+    // MODIFIED: Get remarks value from the new textarea
     const newListing = {
         title: document.getElementById('listing-title').value.trim(),
         url: document.getElementById('listing-url').value.trim(),
         ownerNo: document.getElementById('listing-owner-no').value.trim(),
         brokerNo: document.getElementById('listing-broker-no').value.trim(),
         price: document.getElementById('listing-price').value.trim(),
+        remarks: document.getElementById('listing-remarks').value.trim(),
     };
     if (newListing.title && newListing.url && currentProjectId) {
         createListing(currentProjectId, newListing);

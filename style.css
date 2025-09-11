@@ -121,6 +121,18 @@ td select, td input[type="checkbox"] {
     cursor: pointer;
 }
 
+/* ADDED: Style for editable remarks cell */
+td[contenteditable="true"] {
+    cursor: text;
+    background-color: #fefefe;
+}
+
+td[contenteditable="true"]:focus {
+    outline: 2px solid var(--primary-color);
+    box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+}
+
+
 /* --- Modals --- */
 .modal {
     display: none;
@@ -162,11 +174,12 @@ form {
     gap: 1rem;
 }
 
-input, select {
+input, select, textarea { /* MODIFIED */
     padding: 0.7rem;
     border: 1px solid var(--border-color);
     border-radius: 5px;
     font-size: 1rem;
+    font-family: inherit; /* ADDED */
 }
 
 form button {

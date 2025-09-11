@@ -10,7 +10,6 @@ const firebaseConfig = {
     appId: "1:726586928413:web:2bd29814aa1eb4454b85f4",
     measurementId: "G-K09B5RZ620"
 };
-
 // Initialize Firebase
 firebase.initializeApp(firebaseConfig);
 const db = firebase.firestore();
@@ -91,13 +90,12 @@ async function fetchAndRenderListings(projectId, projectName) {
         const tr = document.createElement('tr');
         tr.dataset.id = doc.id;
 
-        // MODIFIED: Added remarks column
+        // MODIFIED: Render template updated to make fields editable and remove URL column
         tr.innerHTML = `
             <td data-label="No.">${counter}</td>
-            <td data-label="Title"><a href="${listing.url}" target="_blank">${listing.title}</a></td>
-            <td data-label="URL">${listing.url}</td>
-            <td data-label="Owner No.">${listing.ownerNo || '-'}</td>
-            <td data-label="Broker No.">${listing.brokerNo || '-'}</td>
+            <td data-label="Title"><a href="${listing.url}" target="_blank" rel="noopener noreferrer">${listing.title}</a></td>
+            <td data-label="Owner No." contenteditable="true">${listing.ownerNo || ''}</td>
+            <td data-label="Broker No." contenteditable="true">${listing.brokerNo || ''}</td>
             <td data-label="Price">${listing.price || '-'}</td>
             <td data-label="Selected">
                 <input type="checkbox" ${listing.selected ? 'checked' : ''}>
@@ -119,11 +117,15 @@ async function fetchAndRenderListings(projectId, projectName) {
         const select = tr.querySelector('select');
         select.addEventListener('change', (e) => updateListing(projectId, doc.id, { status: e.target.value }));
         
-        // ADDED: Event listener for the editable remarks cell
-        const remarksCell = tr.querySelector('td[contenteditable="true"]');
-        remarksCell.addEventListener('blur', (e) => { // 'blur' fires when the element loses focus
-            updateListing(projectId, doc.id, { remarks: e.target.innerText });
-        });
+        // MODIFIED: Event listeners for all editable cells
+        const ownerNoCell = tr.querySelector('td[data-label="Owner No."]');
+        ownerNoCell.addEventListener('blur', (e) => updateListing(projectId, doc.id, { ownerNo: e.target.innerText.trim() }));
+
+        const brokerNoCell = tr.querySelector('td[data-label="Broker No."]');
+        brokerNoCell.addEventListener('blur', (e) => updateListing(projectId, doc.id, { brokerNo: e.target.innerText.trim() }));
+        
+        const remarksCell = tr.querySelector('td[data-label="Remarks"]');
+        remarksCell.addEventListener('blur', (e) => updateListing(projectId, doc.id, { remarks: e.target.innerText.trim() }));
 
         listingsTbody.appendChild(tr);
         counter--;
@@ -167,7 +169,6 @@ async function createListing(projectId, listingData) {
 async function updateListing(projectId, listingId, dataToUpdate) {
     try {
         await db.collection('projects').doc(projectId).collection('listings').doc(listingId).update(dataToUpdate);
-        // Optional: add a visual cue for successful save
     } catch (error) {
         console.error("Error updating listing: ", error);
     }
@@ -190,7 +191,6 @@ addListingBtn.addEventListener('click', () => toggleModal('listing-modal', true)
 
 addListingForm.addEventListener('submit', (e) => {
     e.preventDefault();
-    // MODIFIED: Get remarks value from the new textarea
     const newListing = {
         title: document.getElementById('listing-title').value.trim(),
         url: document.getElementById('listing-url').value.trim(),
@@ -208,7 +208,7 @@ addListingForm.addEventListener('submit', (e) => {
 backToProjectsBtn.addEventListener('click', () => {
     currentProjectId = null;
     showPage('projects-page');
-    fetchAndRenderProjects(); // Refresh project list when going back
+    fetchAndRenderProjects();
 });
 
 closeButtons.forEach(btn => {

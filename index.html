@@ -5,20 +5,24 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Listing Tracker</title>
     <link rel="stylesheet" href="style.css">
+    <!-- Firebase Libraries -->
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
 </head>
 <body>
 
+    <!-- Main page for listing all projects -->
     <div id="projects-page" class="page active">
         <header>
             <h1>My Projects</h1>
         </header>
         <main id="project-list-container">
-            </main>
+            <!-- Projects will be loaded here by JavaScript -->
+        </main>
         <button id="add-project-btn" class="fab">+</button>
     </div>
 
+    <!-- Page for showing listings of a single project -->
     <div id="listings-page" class="page">
         <header>
             <button id="back-to-projects-btn">&larr; Back</button>
@@ -31,20 +35,23 @@
                     <tr>
                         <th>No.</th>
                         <th>Title</th>
-                        <th>URL</th>
+                        <!-- MODIFIED: URL column removed -->
                         <th>Owner No.</th>
                         <th>Broker No.</th>
                         <th>Price</th>
                         <th>Selected</th>
                         <th>Status</th>
-                        <th>Remarks</th> </tr>
+                        <th>Remarks</th>
+                    </tr>
                 </thead>
                 <tbody id="listings-tbody">
-                    </tbody>
+                    <!-- Listings will be loaded here by JavaScript -->
+                </tbody>
             </table>
         </main>
     </div>
 
+    <!-- Modal for creating a new project -->
     <div id="project-modal" class="modal">
         <div class="modal-content">
             <span class="close-btn" data-modal="project-modal">&times;</span>
@@ -56,6 +63,7 @@
         </div>
     </div>
 
+    <!-- Modal for adding a new listing -->
     <div id="listing-modal" class="modal">
         <div class="modal-content">
             <span class="close-btn" data-modal="listing-modal">&times;</span>
@@ -66,7 +74,8 @@
                 <input type="tel" id="listing-owner-no" placeholder="Owner No.">
                 <input type="tel" id="listing-broker-no" placeholder="Broker No.">
                 <input type="text" id="listing-price" placeholder="Price">
-                <textarea id="listing-remarks" placeholder="Remarks"></textarea> <button type="submit">Add Listing</button>
+                <textarea id="listing-remarks" placeholder="Remarks"></textarea>
+                <button type="submit">Add Listing</button>
             </form>
         </div>
     </div>

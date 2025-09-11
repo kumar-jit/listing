@@ -12,6 +12,8 @@ body {
     margin: 0;
     background-color: var(--secondary-color);
     color: var(--text-color);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
 }
 
 .page {
@@ -121,17 +123,18 @@ td select, td input[type="checkbox"] {
     cursor: pointer;
 }
 
-/* ADDED: Style for editable remarks cell */
+/* MODIFIED: Style for all editable cells */
 td[contenteditable="true"] {
     cursor: text;
-    background-color: #fefefe;
+    background-color: #fdfdfd;
+    transition: background-color 0.2s;
 }
 
 td[contenteditable="true"]:focus {
     outline: 2px solid var(--primary-color);
     box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+    background-color: #fff;
 }
-
 
 /* --- Modals --- */
 .modal {
@@ -174,12 +177,12 @@ form {
     gap: 1rem;
 }
 
-input, select, textarea { /* MODIFIED */
+input, select, textarea {
     padding: 0.7rem;
     border: 1px solid var(--border-color);
     border-radius: 5px;
     font-size: 1rem;
-    font-family: inherit; /* ADDED */
+    font-family: inherit;
 }
 
 form button {
@@ -193,7 +196,7 @@ form button {
 }
 
 
-/* --- Responsive Design for Mobile --- */
+/* --- MODIFIED: Responsive Design for Mobile --- */
 @media (max-width: 768px) {
     header {
         padding: 1rem;
@@ -207,40 +210,63 @@ form button {
         padding: 1rem;
     }
     
-    /* Hide table headers and use cards instead */
+    #listing-table-container {
+        background: none;
+        padding: 0;
+        box-shadow: none;
+    }
+
+    /* Hide table headers */
     table thead {
         display: none;
     }
 
+    /* Make table elements behave like blocks */
     table, tbody, tr, td {
         display: block;
         width: 100%;
     }
 
+    /* Style each row as a card */
     tr {
         background: var(--card-bg);
         border-radius: 8px;
         box-shadow: var(--shadow);
-        margin-bottom: 1rem;
-        padding: 1rem;
+        margin-bottom: 1.5rem;
+        padding: 0.5rem 1rem;
         box-sizing: border-box;
     }
 
+    /* Style each cell (row in the card) */
     td {
         border: none;
-        padding-left: 50%; /* Space for the label */
-        position: relative;
-        padding-top: 0.5rem;
-        padding-bottom: 0.5rem;
+        border-bottom: 1px solid #f0f0f0;
+        padding: 0.75rem 0; /* Vertical padding, no horizontal */
+        display: flex;
+        justify-content: space-between; /* Align label and value */
+        align-items: center;
+        text-align: right; /* Align value to the right */
+    }
+    
+    tr:last-child {
+        margin-bottom: 0;
     }
 
+    td:last-child {
+        border-bottom: none;
+    }
+
+    /* Create the label using a pseudo-element */
     td:before {
         content: attr(data-label);
-        position: absolute;
-        left: 1rem;
-        width: 45%;
-        padding-right: 10px;
         font-weight: bold;
-        white-space: nowrap;
+        text-align: left;
+        padding-right: 1rem;
+        color: #555;
+    }
+
+    /* Ensure link text wraps properly */
+    td a {
+        word-break: break-all;
     }
 }

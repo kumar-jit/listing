@@ -35,7 +35,7 @@
                     <tr>
                         <th>No.</th>
                         <th>Title</th>
-                        <!-- MODIFIED: URL column removed -->
+                        <th>Owner Name</th> <!-- ADDED -->
                         <th>Owner No.</th>
                         <th>Broker No.</th>
                         <th>Price</th>
@@ -71,6 +71,7 @@
             <form id="add-listing-form">
                 <input type="text" id="listing-title" placeholder="Title*" required>
                 <input type="url" id="listing-url" placeholder="URL*" required>
+                <input type="text" id="listing-owner-name" placeholder="Owner Name"> <!-- ADDED -->
                 <input type="tel" id="listing-owner-no" placeholder="Owner No.">
                 <input type="tel" id="listing-broker-no" placeholder="Broker No.">
                 <input type="text" id="listing-price" placeholder="Price">
@@ -83,3 +84,4 @@
     <script src="script.js"></script>
 </body>
 </html>
+

@@ -10,6 +10,7 @@ const firebaseConfig = {
     appId: "1:726586928413:web:2bd29814aa1eb4454b85f4",
     measurementId: "G-K09B5RZ620"
 };
+
 // Initialize Firebase
 firebase.initializeApp(firebaseConfig);
 const db = firebase.firestore();
@@ -84,16 +85,28 @@ async function fetchAndRenderListings(projectId, projectName) {
 
     const snapshot = await db.collection('projects').doc(projectId).collection('listings').orderBy('createdAt', 'desc').get();
 
-    let counter = snapshot.docs.length;
-    snapshot.forEach(doc => {
+    // MODIFIED: Sort listings to move rejected items to the bottom
+    const docs = snapshot.docs;
+    const rejectedDocs = docs.filter(doc => doc.data().status === 'rejected');
+    const otherDocs = docs.filter(doc => doc.data().status !== 'rejected');
+    const sortedDocs = [...otherDocs, ...rejectedDocs];
+
+    let counter = sortedDocs.length;
+    sortedDocs.forEach(doc => {
         const listing = doc.data();
         const tr = document.createElement('tr');
         tr.dataset.id = doc.id;
 
-        // MODIFIED: Render template updated to make fields editable and remove URL column
+        // MODIFIED: Add rejected theme class if applicable
+        if (listing.status === 'rejected') {
+            tr.classList.add('status-rejected');
+        }
+
+        // MODIFIED: Render template updated for Owner Name and new Rejected status
         tr.innerHTML = `
             <td data-label="No.">${counter}</td>
             <td data-label="Title"><a href="${listing.url}" target="_blank" rel="noopener noreferrer">${listing.title}</a></td>
+            <td data-label="Owner Name" contenteditable="true">${listing.ownerName || ''}</td>
             <td data-label="Owner No." contenteditable="true">${listing.ownerNo || ''}</td>
             <td data-label="Broker No." contenteditable="true">${listing.brokerNo || ''}</td>
             <td data-label="Price">${listing.price || '-'}</td>
@@ -103,10 +116,9 @@ async function fetchAndRenderListings(projectId, projectName) {
             <td data-label="Status">
                 <select>
                     <option value="pending" ${listing.status === 'pending' ? 'selected' : ''}>Pending</option>
-                    <option value="Reject" ${listing.status === 'Reject' ? 'selected' : ''}>Reject</option>
-                    <option value="Discuss" ${listing.status === 'Discuss' ? 'selected' : ''}>Discuss</option>
-                    <option value="Selected" ${listing.status === 'Selected' ? 'selected' : ''}>Selected</option>
-                    
+                    <option value="done" ${listing.status === 'done' ? 'selected' : ''}>Done</option>
+                    <option value="close" ${listing.status === 'close' ? 'selected' : ''}>Close</option>
+                    <option value="rejected" ${listing.status === 'rejected' ? 'selected' : ''}>Rejected</option>
                 </select>
             </td>
             <td data-label="Remarks" contenteditable="true">${listing.remarks || ''}</td>
@@ -117,9 +129,23 @@ async function fetchAndRenderListings(projectId, projectName) {
         checkbox.addEventListener('change', (e) => updateListing(projectId, doc.id, { selected: e.target.checked }));
 
         const select = tr.querySelector('select');
-        select.addEventListener('change', (e) => updateListing(projectId, doc.id, { status: e.target.value }));
+        select.addEventListener('change', (e) => {
+            const newStatus = e.target.value;
+            updateListing(projectId, doc.id, { status: newStatus });
+            // MODIFIED: Update row style immediately for better UX
+            if (newStatus === 'rejected') {
+                tr.classList.add('status-rejected');
+            } else {
+                tr.classList.remove('status-rejected');
+            }
+             // A small delay to allow Firestore to update, then re-render to sort correctly
+            setTimeout(() => fetchAndRenderListings(projectId, projectName), 500);
+        });
         
         // MODIFIED: Event listeners for all editable cells
+        const ownerNameCell = tr.querySelector('td[data-label="Owner Name"]');
+        ownerNameCell.addEventListener('blur', (e) => updateListing(projectId, doc.id, { ownerName: e.target.innerText.trim() }));
+        
         const ownerNoCell = tr.querySelector('td[data-label="Owner No."]');
         ownerNoCell.addEventListener('blur', (e) => updateListing(projectId, doc.id, { ownerNo: e.target.innerText.trim() }));
 
@@ -193,9 +219,11 @@ addListingBtn.addEventListener('click', () => toggleModal('listing-modal', true)
 
 addListingForm.addEventListener('submit', (e) => {
     e.preventDefault();
+    // MODIFIED: Added ownerName to the new listing object
     const newListing = {
         title: document.getElementById('listing-title').value.trim(),
         url: document.getElementById('listing-url').value.trim(),
+        ownerName: document.getElementById('listing-owner-name').value.trim(),
         ownerNo: document.getElementById('listing-owner-no').value.trim(),
         brokerNo: document.getElementById('listing-broker-no').value.trim(),
         price: document.getElementById('listing-price').value.trim(),
@@ -224,3 +252,4 @@ document.addEventListener('DOMContentLoaded', () => {
     fetchAndRenderProjects();
     showPage('projects-page');
 });
+

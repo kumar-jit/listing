@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Listing Tracker</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
+</head>
+<body>
+
+    <div id="projects-page" class="page active">
+        <header>
+            <h1>My Projects</h1>
+        </header>
+        <main id="project-list-container">
+            </main>
+        <button id="add-project-btn" class="fab">+</button>
+    </div>
+
+    <div id="listings-page" class="page">
+        <header>
+            <button id="back-to-projects-btn">&larr; Back</button>
+            <h1 id="project-title-header">Project Title</h1>
+            <button id="add-listing-btn">Add Listing</button>
+        </header>
+        <main id="listing-table-container">
+            <table>
+                <thead>
+                    <tr>
+                        <th>No.</th>
+                        <th>Title</th>
+                        <th>URL</th>
+                        <th>Owner No.</th>
+                        <th>Broker No.</th>
+                        <th>Price</th>
+                        <th>Selected</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody id="listings-tbody">
+                    </tbody>
+            </table>
+        </main>
+    </div>
+
+    <div id="project-modal" class="modal">
+        <div class="modal-content">
+            <span class="close-btn" data-modal="project-modal">&times;</span>
+            <h2>Create New Project</h2>
+            <form id="create-project-form">
+                <input type="text" id="new-project-name" placeholder="Enter project name" required>
+                <button type="submit">Create</button>
+            </form>
+        </div>
+    </div>
+
+    <div id="listing-modal" class="modal">
+        <div class="modal-content">
+            <span class="close-btn" data-modal="listing-modal">&times;</span>
+            <h2>Add New Listing</h2>
+            <form id="add-listing-form">
+                <input type="text" id="listing-title" placeholder="Title*" required>
+                <input type="url" id="listing-url" placeholder="URL*" required>
+                <input type="tel" id="listing-owner-no" placeholder="Owner No.">
+                <input type="tel" id="listing-broker-no" placeholder="Broker No.">
+                <input type="text" id="listing-price" placeholder="Price">
+                <button type="submit">Add Listing</button>
+            </form>
+        </div>
+    </div>
+    
+    <script src="script.js"></script>
+</body>
+</html>

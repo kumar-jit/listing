@@ -103,8 +103,10 @@ async function fetchAndRenderListings(projectId, projectName) {
             <td data-label="Status">
                 <select>
                     <option value="pending" ${listing.status === 'pending' ? 'selected' : ''}>Pending</option>
-                    <option value="done" ${listing.status === 'done' ? 'selected' : ''}>Done</option>
-                    <option value="close" ${listing.status === 'close' ? 'selected' : ''}>Close</option>
+                    <option value="Reject" ${listing.status === 'Reject' ? 'selected' : ''}>Reject</option>
+                    <option value="Discuss" ${listing.status === 'Discuss' ? 'selected' : ''}>Discuss</option>
+                    <option value="Selected" ${listing.status === 'Selected' ? 'selected' : ''}>Selected</option>
+                    
                 </select>
             </td>
             <td data-label="Remarks" contenteditable="true">${listing.remarks || ''}</td>
